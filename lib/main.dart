@@ -22,7 +22,9 @@ class _HomeState extends State<Home> {
 
   List _toDoList = [];
 
+  // guarda o ultimo registro removido
   Map<String, dynamic> _lastRemoved;
+  // guarda o índice do ultimo registro removido para retornar ao mesmo índice ao desfazer
   int _lastRemovedPos;
 
   @override
@@ -52,6 +54,7 @@ class _HomeState extends State<Home> {
     await Future.delayed(Duration(seconds: 1));
 
     setState(() {
+      // Ordenação do dart .sort
       _toDoList.sort((a, b){
         if(a["ok"] && !b["ok"]) return 1;
         else if(!a["ok"] && b["ok"]) return -1;
@@ -109,8 +112,9 @@ class _HomeState extends State<Home> {
   }
 
   Widget buildItem(BuildContext context, int index){
+   
     return Dismissible(
-      key: Key(DateTime.now().millisecondsSinceEpoch.toString()),
+      key: Key(DateTime.now().millisecondsSinceEpoch.toString()), // essa key é um objeto qualquer que não deve se repetir no exemplo aqui pegamos os milisegundos da data atual
       background: Container(
         color: Colors.red,
         child: Align(
@@ -133,13 +137,17 @@ class _HomeState extends State<Home> {
         },
       ),
       onDismissed: (direction){
+        // setState para atualizar a lista a cada exclusão
         setState(() {
+          // Guardando o registro a ser removido
           _lastRemoved = Map.from(_toDoList[index]);
+          // Guardando o índice do registro a ser removido
           _lastRemovedPos = index;
+          // Removendo o registro
           _toDoList.removeAt(index);
-
+          // Salvando o arquivo sem o registro removido
           _saveData();
-
+          // Snackbar serve para mostrar informação ao usuario
           final snack = SnackBar(
             content: Text("Tarefa \"${_lastRemoved["title"]}\" removida!"),
             action: SnackBarAction(label: "Desfazer",
@@ -180,6 +188,4 @@ class _HomeState extends State<Home> {
       return null;
     }
   }
-
 }
-
